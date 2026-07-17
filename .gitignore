@@ -27,3 +27,6 @@ __pycache__/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Weights
+src/services/embedding/models/beit3/weights
