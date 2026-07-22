@@ -1,0 +1,175 @@
+{
+    "video_path": "backend/sample/video/sample_video.mp4",
+    "shots": [
+        {
+            "shot_index": 1,
+            "start_frame": 0,
+            "end_frame": 49,
+            "start_time": 0.0,
+            "end_time": 1.63,
+            "duration": 1.63
+        },
+        {
+            "shot_index": 2,
+            "start_frame": 50,
+            "end_frame": 376,
+            "start_time": 1.67,
+            "end_time": 12.53,
+            "duration": 10.87
+        },
+        {
+            "shot_index": 3,
+            "start_frame": 377,
+            "end_frame": 447,
+            "start_time": 12.57,
+            "end_time": 14.9,
+            "duration": 2.33
+        },
+        {
+            "shot_index": 4,
+            "start_frame": 448,
+            "end_frame": 484,
+            "start_time": 14.93,
+            "end_time": 16.13,
+            "duration": 1.2
+        },
+        {
+            "shot_index": 5,
+            "start_frame": 485,
+            "end_frame": 521,
+            "start_time": 16.17,
+            "end_time": 17.37,
+            "duration": 1.2
+        },
+        {
+            "shot_index": 6,
+            "start_frame": 522,
+            "end_frame": 559,
+            "start_time": 17.4,
+            "end_time": 18.63,
+            "duration": 1.23
+        },
+        {
+            "shot_index": 7,
+            "start_frame": 560,
+            "end_frame": 599,
+            "start_time": 18.67,
+            "end_time": 19.97,
+            "duration": 1.3
+        },
+        {
+            "shot_index": 8,
+            "start_frame": 600,
+            "end_frame": 635,
+            "start_time": 20.0,
+            "end_time": 21.17,
+            "duration": 1.17
+        },
+        {
+            "shot_index": 9,
+            "start_frame": 636,
+            "end_frame": 673,
+            "start_time": 21.2,
+            "end_time": 22.43,
+            "duration": 1.23
+        },
+        {
+            "shot_index": 10,
+            "start_frame": 674,
+            "end_frame": 710,
+            "start_time": 22.47,
+            "end_time": 23.67,
+            "duration": 1.2
+        },
+        {
+            "shot_index": 11,
+            "start_frame": 711,
+            "end_frame": 748,
+            "start_time": 23.7,
+            "end_time": 24.93,
+            "duration": 1.23
+        },
+        {
+            "shot_index": 12,
+            "start_frame": 749,
+            "end_frame": 784,
+            "start_time": 24.97,
+            "end_time": 26.13,
+            "duration": 1.17
+        },
+        {
+            "shot_index": 13,
+            "start_frame": 785,
+            "end_frame": 821,
+            "start_time": 26.17,
+            "end_time": 27.37,
+            "duration": 1.2
+        },
+        {
+            "shot_index": 14,
+            "start_frame": 822,
+            "end_frame": 859,
+            "start_time": 27.4,
+            "end_time": 28.63,
+            "duration": 1.23
+        },
+        {
+            "shot_index": 15,
+            "start_frame": 860,
+            "end_frame": 898,
+            "start_time": 28.67,
+            "end_time": 29.93,
+            "duration": 1.27
+        },
+        {
+            "shot_index": 16,
+            "start_frame": 899,
+            "end_frame": 934,
+            "start_time": 29.97,
+            "end_time": 31.13,
+            "duration": 1.17
+        },
+        {
+            "shot_index": 17,
+            "start_frame": 935,
+            "end_frame": 971,
+            "start_time": 31.17,
+            "end_time": 32.37,
+            "duration": 1.2
+        },
+        {
+            "shot_index": 18,
+            "start_frame": 972,
+            "end_frame": 1009,
+            "start_time": 32.4,
+            "end_time": 33.63,
+            "duration": 1.23
+        },
+        {
+            "shot_index": 19,
+            "start_frame": 1010,
+            "end_frame": 1142,
+            "start_time": 33.67,
+            "end_time": 38.07,
+            "duration": 4.4
+        },
+        {
+            "shot_index": 20,
+            "start_frame": 1143,
+            "end_frame": 1230,
+            "start_time": 38.1,
+            "end_time": 41.0,
+            "duration": 2.9
+        },
+        {
+            "shot_index": 21,
+            "start_frame": 1231,
+            "end_frame": 1817,
+            "start_time": 41.03,
+            "end_time": 60.57,
+            "duration": 19.53
+        }
+    ],
+    "threshold": 0.293,
+    "created_at": "2026-07-21T21:43:50.162138+07:00"
+}
