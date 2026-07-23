@@ -1,0 +1,838 @@
+{
+    "video_path": "sample/video/sample_video.mp4",
+    "original_keyframes": [
+        {
+            "frame_index": 0,
+            "timestamp": 0.0
+        },
+        {
+            "frame_index": 12,
+            "timestamp": 0.4
+        },
+        {
+            "frame_index": 24,
+            "timestamp": 0.8
+        },
+        {
+            "frame_index": 36,
+            "timestamp": 1.2
+        },
+        {
+            "frame_index": 49,
+            "timestamp": 1.63
+        },
+        {
+            "frame_index": 50,
+            "timestamp": 1.67
+        },
+        {
+            "frame_index": 60,
+            "timestamp": 2.0
+        },
+        {
+            "frame_index": 71,
+            "timestamp": 2.37
+        },
+        {
+            "frame_index": 81,
+            "timestamp": 2.7
+        },
+        {
+            "frame_index": 92,
+            "timestamp": 3.07
+        },
+        {
+            "frame_index": 102,
+            "timestamp": 3.4
+        },
+        {
+            "frame_index": 113,
+            "timestamp": 3.77
+        },
+        {
+            "frame_index": 123,
+            "timestamp": 4.1
+        },
+        {
+            "frame_index": 134,
+            "timestamp": 4.47
+        },
+        {
+            "frame_index": 144,
+            "timestamp": 4.8
+        },
+        {
+            "frame_index": 155,
+            "timestamp": 5.17
+        },
+        {
+            "frame_index": 165,
+            "timestamp": 5.5
+        },
+        {
+            "frame_index": 176,
+            "timestamp": 5.87
+        },
+        {
+            "frame_index": 186,
+            "timestamp": 6.2
+        },
+        {
+            "frame_index": 197,
+            "timestamp": 6.57
+        },
+        {
+            "frame_index": 207,
+            "timestamp": 6.9
+        },
+        {
+            "frame_index": 218,
+            "timestamp": 7.27
+        },
+        {
+            "frame_index": 228,
+            "timestamp": 7.6
+        },
+        {
+            "frame_index": 239,
+            "timestamp": 7.97
+        },
+        {
+            "frame_index": 249,
+            "timestamp": 8.3
+        },
+        {
+            "frame_index": 260,
+            "timestamp": 8.67
+        },
+        {
+            "frame_index": 270,
+            "timestamp": 9.0
+        },
+        {
+            "frame_index": 281,
+            "timestamp": 9.37
+        },
+        {
+            "frame_index": 291,
+            "timestamp": 9.7
+        },
+        {
+            "frame_index": 302,
+            "timestamp": 10.07
+        },
+        {
+            "frame_index": 312,
+            "timestamp": 10.4
+        },
+        {
+            "frame_index": 323,
+            "timestamp": 10.77
+        },
+        {
+            "frame_index": 333,
+            "timestamp": 11.1
+        },
+        {
+            "frame_index": 344,
+            "timestamp": 11.47
+        },
+        {
+            "frame_index": 354,
+            "timestamp": 11.8
+        },
+        {
+            "frame_index": 365,
+            "timestamp": 12.17
+        },
+        {
+            "frame_index": 376,
+            "timestamp": 12.53
+        },
+        {
+            "frame_index": 377,
+            "timestamp": 12.57
+        },
+        {
+            "frame_index": 388,
+            "timestamp": 12.93
+        },
+        {
+            "frame_index": 400,
+            "timestamp": 13.33
+        },
+        {
+            "frame_index": 412,
+            "timestamp": 13.73
+        },
+        {
+            "frame_index": 423,
+            "timestamp": 14.1
+        },
+        {
+            "frame_index": 435,
+            "timestamp": 14.5
+        },
+        {
+            "frame_index": 447,
+            "timestamp": 14.9
+        },
+        {
+            "frame_index": 448,
+            "timestamp": 14.93
+        },
+        {
+            "frame_index": 466,
+            "timestamp": 15.53
+        },
+        {
+            "frame_index": 484,
+            "timestamp": 16.13
+        },
+        {
+            "frame_index": 485,
+            "timestamp": 16.17
+        },
+        {
+            "frame_index": 503,
+            "timestamp": 16.77
+        },
+        {
+            "frame_index": 521,
+            "timestamp": 17.37
+        },
+        {
+            "frame_index": 522,
+            "timestamp": 17.4
+        },
+        {
+            "frame_index": 540,
+            "timestamp": 18.0
+        },
+        {
+            "frame_index": 559,
+            "timestamp": 18.63
+        },
+        {
+            "frame_index": 560,
+            "timestamp": 18.67
+        },
+        {
+            "frame_index": 573,
+            "timestamp": 19.1
+        },
+        {
+            "frame_index": 586,
+            "timestamp": 19.53
+        },
+        {
+            "frame_index": 599,
+            "timestamp": 19.97
+        },
+        {
+            "frame_index": 600,
+            "timestamp": 20.0
+        },
+        {
+            "frame_index": 617,
+            "timestamp": 20.57
+        },
+        {
+            "frame_index": 635,
+            "timestamp": 21.17
+        },
+        {
+            "frame_index": 636,
+            "timestamp": 21.2
+        },
+        {
+            "frame_index": 654,
+            "timestamp": 21.8
+        },
+        {
+            "frame_index": 673,
+            "timestamp": 22.43
+        },
+        {
+            "frame_index": 674,
+            "timestamp": 22.47
+        },
+        {
+            "frame_index": 692,
+            "timestamp": 23.07
+        },
+        {
+            "frame_index": 710,
+            "timestamp": 23.67
+        },
+        {
+            "frame_index": 711,
+            "timestamp": 23.7
+        },
+        {
+            "frame_index": 729,
+            "timestamp": 24.3
+        },
+        {
+            "frame_index": 748,
+            "timestamp": 24.93
+        },
+        {
+            "frame_index": 749,
+            "timestamp": 24.97
+        },
+        {
+            "frame_index": 766,
+            "timestamp": 25.53
+        },
+        {
+            "frame_index": 784,
+            "timestamp": 26.13
+        },
+        {
+            "frame_index": 785,
+            "timestamp": 26.17
+        },
+        {
+            "frame_index": 803,
+            "timestamp": 26.77
+        },
+        {
+            "frame_index": 821,
+            "timestamp": 27.37
+        },
+        {
+            "frame_index": 822,
+            "timestamp": 27.4
+        },
+        {
+            "frame_index": 840,
+            "timestamp": 28.0
+        },
+        {
+            "frame_index": 859,
+            "timestamp": 28.63
+        },
+        {
+            "frame_index": 860,
+            "timestamp": 28.67
+        },
+        {
+            "frame_index": 879,
+            "timestamp": 29.3
+        },
+        {
+            "frame_index": 898,
+            "timestamp": 29.93
+        },
+        {
+            "frame_index": 899,
+            "timestamp": 29.97
+        },
+        {
+            "frame_index": 916,
+            "timestamp": 30.53
+        },
+        {
+            "frame_index": 934,
+            "timestamp": 31.13
+        },
+        {
+            "frame_index": 935,
+            "timestamp": 31.17
+        },
+        {
+            "frame_index": 953,
+            "timestamp": 31.77
+        },
+        {
+            "frame_index": 971,
+            "timestamp": 32.37
+        },
+        {
+            "frame_index": 972,
+            "timestamp": 32.4
+        },
+        {
+            "frame_index": 990,
+            "timestamp": 33.0
+        },
+        {
+            "frame_index": 1009,
+            "timestamp": 33.63
+        },
+        {
+            "frame_index": 1010,
+            "timestamp": 33.67
+        },
+        {
+            "frame_index": 1021,
+            "timestamp": 34.03
+        },
+        {
+            "frame_index": 1032,
+            "timestamp": 34.4
+        },
+        {
+            "frame_index": 1043,
+            "timestamp": 34.77
+        },
+        {
+            "frame_index": 1054,
+            "timestamp": 35.13
+        },
+        {
+            "frame_index": 1065,
+            "timestamp": 35.5
+        },
+        {
+            "frame_index": 1076,
+            "timestamp": 35.87
+        },
+        {
+            "frame_index": 1087,
+            "timestamp": 36.23
+        },
+        {
+            "frame_index": 1098,
+            "timestamp": 36.6
+        },
+        {
+            "frame_index": 1109,
+            "timestamp": 36.97
+        },
+        {
+            "frame_index": 1120,
+            "timestamp": 37.33
+        },
+        {
+            "frame_index": 1131,
+            "timestamp": 37.7
+        },
+        {
+            "frame_index": 1142,
+            "timestamp": 38.07
+        },
+        {
+            "frame_index": 1143,
+            "timestamp": 38.1
+        },
+        {
+            "frame_index": 1155,
+            "timestamp": 38.5
+        },
+        {
+            "frame_index": 1167,
+            "timestamp": 38.9
+        },
+        {
+            "frame_index": 1180,
+            "timestamp": 39.33
+        },
+        {
+            "frame_index": 1192,
+            "timestamp": 39.73
+        },
+        {
+            "frame_index": 1205,
+            "timestamp": 40.17
+        },
+        {
+            "frame_index": 1217,
+            "timestamp": 40.57
+        },
+        {
+            "frame_index": 1230,
+            "timestamp": 41.0
+        },
+        {
+            "frame_index": 1231,
+            "timestamp": 41.03
+        },
+        {
+            "frame_index": 1241,
+            "timestamp": 41.37
+        },
+        {
+            "frame_index": 1251,
+            "timestamp": 41.7
+        },
+        {
+            "frame_index": 1261,
+            "timestamp": 42.03
+        },
+        {
+            "frame_index": 1272,
+            "timestamp": 42.4
+        },
+        {
+            "frame_index": 1282,
+            "timestamp": 42.73
+        },
+        {
+            "frame_index": 1292,
+            "timestamp": 43.07
+        },
+        {
+            "frame_index": 1302,
+            "timestamp": 43.4
+        },
+        {
+            "frame_index": 1313,
+            "timestamp": 43.77
+        },
+        {
+            "frame_index": 1323,
+            "timestamp": 44.1
+        },
+        {
+            "frame_index": 1333,
+            "timestamp": 44.43
+        },
+        {
+            "frame_index": 1344,
+            "timestamp": 44.8
+        },
+        {
+            "frame_index": 1354,
+            "timestamp": 45.13
+        },
+        {
+            "frame_index": 1364,
+            "timestamp": 45.47
+        },
+        {
+            "frame_index": 1374,
+            "timestamp": 45.8
+        },
+        {
+            "frame_index": 1385,
+            "timestamp": 46.17
+        },
+        {
+            "frame_index": 1395,
+            "timestamp": 46.5
+        },
+        {
+            "frame_index": 1405,
+            "timestamp": 46.83
+        },
+        {
+            "frame_index": 1416,
+            "timestamp": 47.2
+        },
+        {
+            "frame_index": 1426,
+            "timestamp": 47.53
+        },
+        {
+            "frame_index": 1436,
+            "timestamp": 47.87
+        },
+        {
+            "frame_index": 1446,
+            "timestamp": 48.2
+        },
+        {
+            "frame_index": 1457,
+            "timestamp": 48.57
+        },
+        {
+            "frame_index": 1467,
+            "timestamp": 48.9
+        },
+        {
+            "frame_index": 1477,
+            "timestamp": 49.23
+        },
+        {
+            "frame_index": 1488,
+            "timestamp": 49.6
+        },
+        {
+            "frame_index": 1498,
+            "timestamp": 49.93
+        },
+        {
+            "frame_index": 1508,
+            "timestamp": 50.27
+        },
+        {
+            "frame_index": 1518,
+            "timestamp": 50.6
+        },
+        {
+            "frame_index": 1529,
+            "timestamp": 50.97
+        },
+        {
+            "frame_index": 1539,
+            "timestamp": 51.3
+        },
+        {
+            "frame_index": 1549,
+            "timestamp": 51.63
+        },
+        {
+            "frame_index": 1559,
+            "timestamp": 51.97
+        },
+        {
+            "frame_index": 1570,
+            "timestamp": 52.33
+        },
+        {
+            "frame_index": 1580,
+            "timestamp": 52.67
+        },
+        {
+            "frame_index": 1590,
+            "timestamp": 53.0
+        },
+        {
+            "frame_index": 1601,
+            "timestamp": 53.37
+        },
+        {
+            "frame_index": 1611,
+            "timestamp": 53.7
+        },
+        {
+            "frame_index": 1621,
+            "timestamp": 54.03
+        },
+        {
+            "frame_index": 1631,
+            "timestamp": 54.37
+        },
+        {
+            "frame_index": 1642,
+            "timestamp": 54.73
+        },
+        {
+            "frame_index": 1652,
+            "timestamp": 55.07
+        },
+        {
+            "frame_index": 1662,
+            "timestamp": 55.4
+        },
+        {
+            "frame_index": 1673,
+            "timestamp": 55.77
+        },
+        {
+            "frame_index": 1683,
+            "timestamp": 56.1
+        },
+        {
+            "frame_index": 1693,
+            "timestamp": 56.43
+        },
+        {
+            "frame_index": 1703,
+            "timestamp": 56.77
+        },
+        {
+            "frame_index": 1714,
+            "timestamp": 57.13
+        },
+        {
+            "frame_index": 1724,
+            "timestamp": 57.47
+        },
+        {
+            "frame_index": 1734,
+            "timestamp": 57.8
+        },
+        {
+            "frame_index": 1745,
+            "timestamp": 58.17
+        },
+        {
+            "frame_index": 1755,
+            "timestamp": 58.5
+        },
+        {
+            "frame_index": 1765,
+            "timestamp": 58.83
+        },
+        {
+            "frame_index": 1775,
+            "timestamp": 59.17
+        },
+        {
+            "frame_index": 1786,
+            "timestamp": 59.53
+        },
+        {
+            "frame_index": 1796,
+            "timestamp": 59.87
+        },
+        {
+            "frame_index": 1806,
+            "timestamp": 60.2
+        },
+        {
+            "frame_index": 1817,
+            "timestamp": 60.57
+        }
+    ],
+    "distilled_keyframes": [
+        {
+            "frame_index": 0,
+            "timestamp": 0.0
+        },
+        {
+            "frame_index": 12,
+            "timestamp": 0.4
+        },
+        {
+            "frame_index": 24,
+            "timestamp": 0.8
+        },
+        {
+            "frame_index": 49,
+            "timestamp": 1.63
+        },
+        {
+            "frame_index": 60,
+            "timestamp": 2.0
+        },
+        {
+            "frame_index": 92,
+            "timestamp": 3.07
+        },
+        {
+            "frame_index": 123,
+            "timestamp": 4.1
+        },
+        {
+            "frame_index": 186,
+            "timestamp": 6.2
+        },
+        {
+            "frame_index": 377,
+            "timestamp": 12.57
+        },
+        {
+            "frame_index": 388,
+            "timestamp": 12.93
+        },
+        {
+            "frame_index": 400,
+            "timestamp": 13.33
+        },
+        {
+            "frame_index": 412,
+            "timestamp": 13.73
+        },
+        {
+            "frame_index": 423,
+            "timestamp": 14.1
+        },
+        {
+            "frame_index": 448,
+            "timestamp": 14.93
+        },
+        {
+            "frame_index": 484,
+            "timestamp": 16.13
+        },
+        {
+            "frame_index": 485,
+            "timestamp": 16.17
+        },
+        {
+            "frame_index": 560,
+            "timestamp": 18.67
+        },
+        {
+            "frame_index": 600,
+            "timestamp": 20.0
+        },
+        {
+            "frame_index": 617,
+            "timestamp": 20.57
+        },
+        {
+            "frame_index": 636,
+            "timestamp": 21.2
+        },
+        {
+            "frame_index": 674,
+            "timestamp": 22.47
+        },
+        {
+            "frame_index": 711,
+            "timestamp": 23.7
+        },
+        {
+            "frame_index": 749,
+            "timestamp": 24.97
+        },
+        {
+            "frame_index": 766,
+            "timestamp": 25.53
+        },
+        {
+            "frame_index": 785,
+            "timestamp": 26.17
+        },
+        {
+            "frame_index": 899,
+            "timestamp": 29.97
+        },
+        {
+            "frame_index": 916,
+            "timestamp": 30.53
+        },
+        {
+            "frame_index": 935,
+            "timestamp": 31.17
+        },
+        {
+            "frame_index": 990,
+            "timestamp": 33.0
+        },
+        {
+            "frame_index": 1065,
+            "timestamp": 35.5
+        },
+        {
+            "frame_index": 1076,
+            "timestamp": 35.87
+        },
+        {
+            "frame_index": 1087,
+            "timestamp": 36.23
+        },
+        {
+            "frame_index": 1098,
+            "timestamp": 36.6
+        },
+        {
+            "frame_index": 1109,
+            "timestamp": 36.97
+        },
+        {
+            "frame_index": 1143,
+            "timestamp": 38.1
+        },
+        {
+            "frame_index": 1230,
+            "timestamp": 41.0
+        },
+        {
+            "frame_index": 1282,
+            "timestamp": 42.73
+        },
+        {
+            "frame_index": 1395,
+            "timestamp": 46.5
+        }
+    ],
+    "keyframe_ratio": 0.1,
+    "threshold": 0.9,
+    "created_at": "2026-07-22T17:52:15.433675+07:00"
+}

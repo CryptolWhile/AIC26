@@ -59,6 +59,8 @@ class HuggingFaceCLIPEmbedding(EmbeddingModel):
                     batch = texts[index : index + batch_size]
                     text_tokens = self.tokenizer(batch, truncation=True, padding=True, return_tensors="pt").to(self.device)
                     text_features = self.model.get_text_features(**text_tokens)
+                    if not isinstance(text_features, torch.Tensor):
+                        text_features = getattr(text_features, "text_embeds", getattr(text_features, "pooler_output", text_features[0]))
                     if normalize:
                         text_features = torch.nn.functional.normalize(text_features, dim=-1)
                     embeddings_list.append(text_features.cpu())
@@ -112,6 +114,8 @@ class HuggingFaceCLIPEmbedding(EmbeddingModel):
                     batch = processed_images[index : index + batch_size]
                     image_tensors = self.processor(images=batch, return_tensors="pt").to(self.device)
                     image_features = self.model.get_image_features(**image_tensors)
+                    if not isinstance(image_features, torch.Tensor):
+                        image_features = getattr(image_features, "image_embeds", getattr(image_features, "pooler_output", image_features[0]))
                     if normalize:
                         image_features = torch.nn.functional.normalize(image_features, dim=-1)
                     embeddings_list.append(image_features.cpu())

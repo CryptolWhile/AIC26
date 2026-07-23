@@ -3,7 +3,7 @@ import logging
 import torch
 from PIL import Image
 
-from src.services.embedding.interface import EmbeddingModel, EmbeddingResult
+from src.services.embedding.interface import EmbeddingModel, EmbeddingResult, EmbeddingType
 from src.services.embedding.manager import EmbeddingManager
 
 logger = logging.getLogger(__name__)
