@@ -18,7 +18,7 @@ matplotlib
 pandas
 pytz
 tensorboardX
-tensorflow
+
 torchmetrics
 torchscale
 youtube-transcript-api
