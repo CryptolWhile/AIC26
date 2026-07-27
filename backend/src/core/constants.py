@@ -1,0 +1,1 @@
+ALLOW_VIDEO_SUFFIXES = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm']

@@ -11,7 +11,7 @@ class Video(BaseModel):
     is_deleted: bool = Field(default=False, description="Trạng thái xóa video")
     is_processed: bool = Field(default=False, description="Trạng thái xử lý video")
 
-    class Config(BaseModel):
+    class Config:
         """Cấu hình cho model """
 
         json_schema_extra = {
