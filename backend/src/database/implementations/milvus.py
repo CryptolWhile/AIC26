@@ -138,7 +138,7 @@ class MilvusDatabase(Database):
             if not collection:
                 raise ValueError(f"Collection '{collection_name}' does not exist")
             
-            expr = f"id == '{data_id}'"
+            expr = f"id == '{data_id}'" #str
             result = collection.delete(expr=expr)
             collection.flush()
             collection.load()

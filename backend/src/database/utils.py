@@ -54,3 +54,35 @@ def pydantic_to_milvus_schema(
     )
 
     return fields
+
+def pydantic_to_mongo_schema(model: BaseModel) -> Dict[str, Any]:
+    """Convert a Pydantic model into MongoDB JSON Schema."""
+
+    schema = model.model_json_schema()
+
+    properties = {}
+    required = schema.get("required", [])
+
+    for field, field_schema in schema["properties"].items():
+        field_type = field_schema.get("type", "string")
+
+        if field_type == "array":
+            bson_type = "array"
+        elif field_type == "boolean":
+            bson_type = "bool"
+        elif field_type == "integer":
+            bson_type = "int"
+        elif field_type == "number":
+            bson_type = "double"
+        elif field_type == "object":
+            bson_type = "object"
+        else:
+            bson_type = "string"
+
+        properties[field] = {"bsonType": bson_type}
+
+    return {
+        "bsonType": "object",
+        "required": required,
+        "properties": properties
+    }
