@@ -27,7 +27,7 @@ class FaissSettings(BaseSettings):
     pass
 
 class ElasticSettings(BaseSettings):
-    ELASTIC_URI: str = "http://elasticsearch:9200"
+    ELASTIC_URI: str = "http://127.0.0.1:9200"
 
 
 class MilvusSettings(BaseSettings):

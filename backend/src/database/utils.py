@@ -86,3 +86,42 @@ def pydantic_to_mongo_schema(model: BaseModel) -> Dict[str, Any]:
         "required": required,
         "properties": properties
     }
+
+def pydantic_to_elastic_schema(model: BaseModel) -> Dict[str, Any]:
+    """
+    Convert a Pydantic model to Elasticsearch index mapping.
+    """
+    properties = {}
+
+    for field_name, field in model.model_fields.items():
+        field_type = field.annotation
+        es_type = None
+
+        if "es_type" in field.metadata:
+            es_type = field.metadata["es_type"]
+
+        if es_type is None:
+            if field_type == str:
+                es_type = "text"
+            elif field_type == int:
+                es_type = "integer"
+            elif field_type == float:
+                es_type = "float"
+            elif field_type == bool:
+                es_type = "boolean"
+            elif get_origin(field_type) == list:
+                inner_type = get_args(field_type)[0]
+                if inner_type == str:
+                    es_type = "text"
+                elif inner_type == int:
+                    es_type = "integer"
+                elif inner_type == float:
+                    es_type = "float"
+                else:
+                    es_type = "object"
+            else:
+                es_type = "object"
+
+        properties[field_name] = {"type": es_type}
+
+    return {"mappings": {"properties": properties}}

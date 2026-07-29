@@ -78,3 +78,17 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: password
     depends_on:
       - "mongo"
+
+  # Elasticsearch
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.19.19
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/elasticsearch:/usr/share/elasticsearch/data
+    restart: unless-stopped
