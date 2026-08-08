@@ -30,7 +30,7 @@ class Autoshot:
         self.model = load_supernet_model(model_dir, self.device)
     
     def predict(self, batch):
-        batch = torch.from_numpy(batch.transpose((3, 0, 1, 2))[np.newaxis, ...]) * 1.0
+        batch = torch.from_numpy(batch.transpose((3, 0, 1, 2))[np.newaxis, ...]).float().to(self.device)
         one_hot_pred = self.model(batch)
         if isinstance(one_hot_pred, tuple):
             one_hot_pred = one_hot_pred[0]
