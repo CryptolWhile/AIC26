@@ -1,0 +1,24 @@
+data:
+  image_dir: "sample/processed/images"
+  embedding_dir: "sample/processed/embeddings"
+
+batch_size: 16
+
+models:
+  - provider: "hf_siglip_multimodal"
+    name: "SIGLIP-SO400M"
+    config:
+      model_name: "google/siglip-so400m-patch14-384"
+      device: "cuda"
+
+  - provider: "hf_clip_multimodal"
+    name: "CLIP-ViT-H14"
+    config:
+      model_name: "laion/CLIP-ViT-H-14-laion2B-s32B-b79K"
+      device: "cuda"
+
+  - provider: "hf_clip_multimodal"
+    name: "CLIP-ViT-L14"
+    config:
+      model_name: "laion/CLIP-ViT-L-14-laion2B-s32B-b82K"
+      device: "cuda"
