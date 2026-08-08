@@ -1,0 +1,1 @@
+python -m src.services.processing.pipeline keyframe_extraction --config ./src/configs/processing.yaml

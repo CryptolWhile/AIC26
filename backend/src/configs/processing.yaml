@@ -1,0 +1,20 @@
+shot_extraction:
+  video_dir: "sample/video"
+  save_dir: "sample/processed/shots"
+  extractor_name: "autoshot"
+  provider_name: "autoshot"
+  config: {}
+
+keyframe_extraction:
+  shot_dir: "sample/processed/shots"
+  keyframe_dir: "sample/processed/keyframes"
+  image_dir: "sample/processed/images"
+  provider_name: "open_clip_multimodal"
+  model_name: "ViT-H-14"
+  keyframe_ratio: 0.2
+  compare_length: 2
+  threshold: 0.95
+  config:
+    model_name: "ViT-H-14"
+    pretrained: "laion2b-s32b-b79k"
+    device: "cuda"

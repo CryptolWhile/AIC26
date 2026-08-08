@@ -22,3 +22,8 @@ tensorboardX
 torchmetrics
 torchscale
 youtube-transcript-api
+
+# New dependencies required for pipeline and DB
+av
+PyYAML
+elasticsearch
