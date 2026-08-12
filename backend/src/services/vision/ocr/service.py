@@ -1,17 +1,32 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 
 from src.services.vision.ocr.manager import OCRManager
 from src.services.vision.ocr.interface import (
     OCRResult, OCRModel
 )
-
+from src.core import extensions
 
 class OCRService:
     
     def __init__(self):
         self.manager = OCRManager()
         self.model_registry: Dict[str, OCRModel] = {}
-    
+
+    @property
+    def elastic_db(self):
+        """Get ElasticSearch connection dynamically."""
+        return extensions.elastic_db
+
+    def insert(self, data: list[Dict[str, Any]]) -> Tuple[str, int]:
+        try:
+            result = self.elastic_db.index_data(collection_name="vieocr", 
+                data_list=data)
+            if result["total_failed"] > 0:
+                return f"Error inserting data: {result['total_failed']} documents failed", 500
+            return f"Inserted data successfully: {result['total_successful']}", 200
+        except Exception as e:
+            return f"Error inserting data: {str(e)}", 500
+        
     def register_model(
         self, 
         config: Optional[Dict[str, Any]] = None,
