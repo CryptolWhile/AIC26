@@ -1,5 +1,5 @@
-torch>=2.0.0
-torchvision>=0.15.0
+# torch>=2.0.0
+# torchvision>=0.15.0
 numpy
 Pillow
 transformers
@@ -19,11 +19,26 @@ pandas
 pytz
 tensorboardX
 
-torchmetrics
-torchscale
+# torchmetrics
+# torchscale
 youtube-transcript-api
 
 # New dependencies required for pipeline and DB
 av
 PyYAML
 elasticsearch
+
+# Dependencies for Retrieval and LLM services
+faiss-cpu
+langdetect
+langchain-core
+langchain-google-genai
+langchain-openai
+langchain-azure-ai
+deep-translator
+setuptools
+flask
+flask-cors
+pymilvus
+pymongo
+pydantic-settings

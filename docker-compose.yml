@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 
 services:
   # Milvus Standalone
@@ -32,7 +32,7 @@ services:
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus:v3.0-beta
+    image: milvusdb/milvus:latest
     command: ["milvus", "run", "standalone"]
     environment:
       ETCD_ENDPOINTS: etcd:2379
@@ -46,38 +46,18 @@ services:
       - "minio"
     restart: unless-stopped
 
-  attu:
-    container_name: milvus-attu
-    image: zilliz/attu:v2.4.9
-    environment:
-      MILVUS_URL: milvus-standalone:19530
-    ports:
-      - "8000:3000"
-    depends_on:
-      - "standalone"
-    restart: unless-stopped
-
-  mongo:
-    container_name: aic-mongo
+  # MongoDB
+  mongodb:
+    container_name: mongodb
     image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
       - "27017:27017"
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mongo:/data/db
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mongodb:/data/db
     restart: unless-stopped
-
-  mongo-express:
-    container_name: mongo-express
-    image: mongo-express
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: password
-    depends_on:
-      - "mongo"
 
   # Elasticsearch
   elasticsearch:
@@ -92,3 +72,9 @@ services:
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/elasticsearch:/usr/share/elasticsearch/data
     restart: unless-stopped
+
+
+networks:
+  default:
+    name: video-retrieval-network
+    driver: bridge

@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
@@ -36,18 +37,18 @@ class MilvusSettings(BaseSettings):
 
 
 class FaissSettings(BaseSettings):
-    FAISS_INDEX_DIR: str = "/data/faiss"
-    FAISS_METADATA_FILE: str = "/data/faiss/metadata.json"
+    FAISS_INDEX_DIR: str = "./data/faiss"
+    FAISS_METADATA_FILE: str = "./data/faiss/metadata.json"
 
 class MetadataStoreSettings(BaseSettings):
-    METADATA_STORE_DIR: str = "/data/metadata_store"
+    METADATA_STORE_DIR: str = "./data/metadata_store"
 
 class OpenAISettings(BaseSettings):
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: Optional[str] = None
 
 
 class GeminiSettings(BaseSettings):
-    GEMINI_API_KEY: str
+    GEMINI_API_KEY: Optional[str] = None
 
 
 class Settings:
