@@ -1,2 +1,2 @@
-export const IMAGE_DIR = "/src/assets/images/";
-export const VIDEO_DIR = "/src/assets/videos/";
+export const IMAGE_DIR = "http://localhost:8000/api/search/image/";
+export const VIDEO_DIR = "/videos/";

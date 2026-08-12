@@ -49,30 +49,33 @@ const sampleResponse = {
 };
 
 function formatImageId(image_id) {
-  return image_id.split('_').join('/').replace('K', '');
+  return image_id.split('_').join('/');
 }
 
 async function searchUser(query, isTrake) {
   try {
-    // const response = await axios.post("http://localhost:8001/api/search/", query);
-    let response = { data: isTrake ? sampleResponseTrake : sampleResponse };
+    const response = await axios.post("http://localhost:8000/api/search/", query);
     let result = [];
     if (!isTrake) {
-      result = response.data.results.map((frame) => formatImageId(frame.image_id));
+      if (response.data.results && response.data.results.length > 0) {
+        result = response.data.results[0].map((frame) => formatImageId(frame.image_id));
+      }
     } else {
-      result = response.data.results.map(videoGroups =>
-        videoGroups.map(group => {
-          const formatted = group.map(frame => ({
-            ...frame,
-            image_id: formatImageId(frame.image_id)
-          }));
-          const mainFrame = formatted.find(f => f.is_main_frame) ?? formatted[0];
-          return {
-            allFrames: formatted,
-            mainFrame: mainFrame.image_id
-          };
-        })
-      );
+      if (response.data.results && response.data.results.length > 0) {
+        result = response.data.results[0].map(videoGroups =>
+          videoGroups.map(group => {
+            const formatted = group.map(frame => ({
+              ...frame,
+              image_id: formatImageId(frame.image_id)
+            }));
+            const mainFrame = formatted.find(f => f.is_main_frame) ?? formatted[0];
+            return {
+              allFrames: formatted,
+              mainFrame: mainFrame.image_id
+            };
+          })
+        );
+      }
     }
     return result;
   } catch (err) {
@@ -311,6 +314,34 @@ function App() {
     });
   }, []);
 
+  const handleSaveOutput = useCallback(async () => {
+    if (allOrder.size === 0) {
+      alert("Bạn chưa chọn khung hình nào!");
+      return;
+    }
+    
+    // Sắp xếp các ảnh theo thứ tự đã click (value của Map)
+    const sortedEntries = Array.from(allOrder.entries()).sort((a, b) => a[1] - b[1]);
+    
+    // Chuyển đổi định dạng "K01/V01/785" thành "K01_V01,785" (Chuẩn nộp bài AIC)
+    const csvLines = sortedEntries.map(([frame, order]) => {
+      const parts = frame.split('/');
+      return `${parts[0]}_${parts[1]},${parts[2]}`;
+    });
+    
+    const queryName = currentSceneRef.current?.value || "query_result";
+    
+    try {
+      await axios.post("http://localhost:8000/api/submit/", {
+        [queryName]: csvLines
+      });
+      alert(`🎉 Đã lưu thành công ${csvLines.length} khung hình vào thư mục submission.zip của Backend!`);
+    } catch (err) {
+      console.error(err);
+      alert("❌ Có lỗi xảy ra khi lưu Output. Hãy kiểm tra Backend!");
+    }
+  }, [allOrder]);
+
   const widthDiv = '320px';
 
   return (
@@ -359,7 +390,7 @@ function App() {
           <CustomButton title="Deselect All" size="large" onClick={deselectAllClick} />
           <CustomButton disabled={isTrake} title={isGroup ? "Ungroup Results" : "Group by Video"} size="large" onClick={() => setIsGroup(!isGroup)} />
           <CustomTextField label="VQA Answer" inputRef={VQARef} multiline rows={2} />
-          <CustomButton title="Save Output" size="large" primary onClick={() => {}} />
+          <CustomButton title="Save Output" size="large" primary onClick={handleSaveOutput} />
         </Box>
       </Box>
 
