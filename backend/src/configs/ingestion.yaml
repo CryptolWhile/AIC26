@@ -1,0 +1,4 @@
+data:
+  image_dir: "processed/images"
+  embedding_dir: "processed/embeddings"
+  keyframe_dir: "processed/keyframes"
