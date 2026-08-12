@@ -55,7 +55,8 @@ class MilvusDatabase(Database):
     def create_collection(self, collection_name: str, schema: List[FieldSchema], index_params: Optional[Dict[str, Any]] = None) -> Collection:
         self.ensure_connection()
         if utility.has_collection(collection_name=collection_name):
-            raise ValueError(f"Collection '{collection_name}' already exists")
+            logger.warning(f"Collection '{collection_name}' already exists. Skipping creation.")
+            return Collection(name=collection_name)
         
         collection_schema = CollectionSchema(fields=schema, description=collection_name)
         collection = Collection(name=collection_name, schema=collection_schema)
@@ -115,6 +116,19 @@ class MilvusDatabase(Database):
             logger.error(f"Error indexing data '{data_id}': {str(e)}")
             raise
 
+    def index_bulk_data(self, collection_name: str, data_list: List[Dict[str, Any]]) -> Any:
+        self.ensure_connection()
+        try:
+            collection = self.get_collection(collection_name=collection_name)
+            if not data_list:
+                return None
+            result = collection.insert(data=data_list)
+            logger.info(f"{len(data_list)} items indexed successfully in collection '{collection_name}'")
+            return result
+        except Exception as e:
+            logger.error(f"Error bulk indexing data: {str(e)}")
+            raise
+
     def update_data(self, collection_name: str, data: Dict[str, Any], data_id: str) -> Any:
         self.ensure_connection()
         try:
@@ -138,7 +152,7 @@ class MilvusDatabase(Database):
             if not collection:
                 raise ValueError(f"Collection '{collection_name}' does not exist")
             
-            expr = f"id == '{data_id}'" #str
+            expr = f"id == '{data_id}'"
             result = collection.delete(expr=expr)
             collection.flush()
             collection.load()
@@ -163,6 +177,18 @@ class MilvusDatabase(Database):
             output_fields = query.get("output_fields", ["id"])
             collection.load()
             
+            # Check if collection has any data before searching
+            # This helps avoid the "Unsupported field type: 0" error when collection is empty
+            try:
+                # Use num_entities to check if collection has data
+                if collection.num_entities == 0:
+                    # Collection is empty, return empty search results
+                    logger.info(f"Collection '{collection_name}' is empty, returning empty search results")
+                    return [[]]  # Return empty results in the expected format
+            except Exception:
+                # If num_entities fails, proceed with search anyway
+                pass
+            
             results = collection.search(
                 data=data,
                 anns_field=anns_field,
@@ -174,6 +200,11 @@ class MilvusDatabase(Database):
             return results
         
         except Exception as e:
+            # Handle the specific "Unsupported field type: 0" error that occurs with empty collections
+            if "Unsupported field type: 0" in str(e):
+                logger.warning(f"Collection '{collection_name}' appears to be empty or corrupted, returning empty results")
+                return [[]]  # Return empty results in the expected format
+            
             logger.error(f"Error searching in collection '{collection_name}': {str(e)}")
             raise
     

@@ -12,6 +12,7 @@ from src.database.interface import Database
 
 logger = logging.getLogger(__name__)
 
+
 class MongoDatabase(Database):
     
     instance = None
@@ -24,27 +25,27 @@ class MongoDatabase(Database):
             cls.instance = super(MongoDatabase, cls).__new__(cls)
             cls.instance.initialize(settings=settings)
         return cls.instance
-
+    
     def initialize(self, settings: MongoSettings):
         super().__init__()
-
+        
         self.settings = settings
-        self.client = MongoClient = None
+        self.client: MongoClient = None
         self.db = None
         self.connect()
-
-    def connect(self)-> None:
+    
+    def connect(self) -> None:
         try:
             if not self.settings.MONGODB_URI:
                 raise ValueError("MongoDB URI is not set in environment variables")
-
+            
             self.client = MongoClient(self.settings.MONGODB_URI)
             self.db = self.client[self.settings.MONGO_DATABASE]
-
+            
             self.ping()
             self.is_connected = True
             logger.info(f"Connected to MongoDatabase successfully - Database: {self.settings.MONGO_DATABASE}")
-
+        
         except (ConnectionFailure, ServerSelectionTimeoutError) as e:
             self.is_connected = False
             logger.error(f"Failed to connect to MongoDatabase: {str(e)}")
@@ -54,24 +55,28 @@ class MongoDatabase(Database):
             self.is_connected = False
             logger.error(f"Unexpected error connecting to MongoDatabase: {str(e)}")
             raise
-
-    def create_collection(self, collection_name: str, schema: Optional[Dict[str, Any]] = None):
-        # schema: bsonType,required,properties
+    
+    def create_collection(self, collection_name: str, schema: Optional[Dict[str, Any]] = None) -> Collection:
         self.ensure_connection()
         if self.db is None:
             raise RuntimeError("Database connection not established")
 
+        # Check if collection already exists
+        if collection_name in self.db.list_collection_names():
+            logger.info(f"Collection '{collection_name}' already exists, returning existing collection")
+            return self.db[collection_name]
+
         if schema:
             collection = self.db.create_collection(
-                collection_name,
+                collection_name, 
                 validator={"$jsonSchema": schema}
             )
         else:
             collection = self.db[collection_name]
-
+        
         logger.info(f"Collection '{collection_name}' created successfully")
         return collection
-
+    
     def get_collection(self, collection_name: str) -> Optional[Collection]:
         self.ensure_connection()
         if self.db is not None:
@@ -93,7 +98,7 @@ class MongoDatabase(Database):
         except Exception as e:
             logger.error(f"Failed to drop collection '{collection_name}': {str(e)}")
             raise
-
+        
     def index_data(self, collection_name: str, data: Dict[str, Any], data_id: str) -> Any:
         self.ensure_connection()
         try:
@@ -105,7 +110,7 @@ class MongoDatabase(Database):
             document_copy['_id'] = data_id
             
             try:
-                result = collection.insert_one(document_copy)
+                result = collection.replace_one({'_id': data_id}, document_copy, upsert=True)
                 logger.info(f"Data '{data_id}' indexed successfully in collection '{collection_name}'")
                 return result
             
@@ -116,7 +121,7 @@ class MongoDatabase(Database):
         except Exception as e:
             logger.error(f"Error indexing data '{data_id}': {str(e)}")
             raise
-
+    
     def update_data(self, collection_name: str, data: Dict[str, Any], data_id: str) -> Any:
         self.ensure_connection()
         try:
@@ -126,7 +131,7 @@ class MongoDatabase(Database):
             
             result = collection.update_one(
                 {"_id": data_id},
-                {"$set": data} #$set: ghi đè dữ liệu
+                {"$set": data}
             )
             
             logger.info(f"Data '{data_id}' updated successfully in collection '{collection_name}'")
@@ -135,7 +140,7 @@ class MongoDatabase(Database):
         except Exception as e:
             logger.error(f"Error updating data '{data_id}': {str(e)}")
             raise
-
+    
     def delete_data(self, collection_name: str, data_id: str) -> None:
         self.ensure_connection()
         try:
@@ -143,7 +148,7 @@ class MongoDatabase(Database):
             if collection is None:
                 raise ValueError(f"Collection '{collection_name}' does not exist")
         
-            result = collection.delete_one({"_id": data_id}) #BSON {}
+            result = collection.delete_one({"_id": data_id})
             
             if result.deleted_count > 0:
                 logger.info(f"Data '{data_id}' deleted successfully from collection '{collection_name}'")
@@ -153,7 +158,7 @@ class MongoDatabase(Database):
         except Exception as e:
             logger.error(f"Failed to delete data '{data_id}': {str(e)}")
             raise
-
+    
     def search(self, collection_name: str, query: Dict[str, Any]) -> List[Dict[str, Any]]:
         self.ensure_connection()
         try:
@@ -168,7 +173,7 @@ class MongoDatabase(Database):
         except Exception as e:
             logger.error(f"Search failed in collection '{collection_name}': {str(e)}")
             raise
-
+    
     def ping(self) -> bool:
         try:
             if self.client:
