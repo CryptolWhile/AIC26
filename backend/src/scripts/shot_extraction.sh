@@ -1,1 +1,1 @@
-python -m src.services.processing.pipeline shot_extraction --config ./src/configs/processing.yaml
+python -m src.services.processing.pipeline shot_extraction --config ./src/configs/processing.yaml --num_gpus 2

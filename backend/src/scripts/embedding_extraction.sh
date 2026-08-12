@@ -1,1 +1,1 @@
-python -m src.services.embedding.pipeline --config ./src/configs/embedding.yaml --model_name "CLIP-ViT-L14" --K_start 1 --K_end 10
+python -m src.services.embedding.pipeline --config ./src/configs/embedding.yaml --model_name "hf_clip_L" --K_start 1 --K_end 10 --num_gpus 2
