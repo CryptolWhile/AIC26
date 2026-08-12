@@ -34,6 +34,8 @@ def shot_extraction_pipeline(
     config: Optional[Dict[str, Any]] = None,
     K_start: int = 1,
     K_end: int = 20,
+    num_gpus: int = 1,
+    gpu_id: int = 0,
 ):
     video_root = Path(video_dir)
     save_root = Path(save_dir)
@@ -51,7 +53,7 @@ def shot_extraction_pipeline(
     )
     logger.info(f"Registered extractor '{extractor_name}' with provider '{provider_name}'")
 
-    for video_path in tqdm(iter_videos_in_range(video_root, K_start, K_end),
+    for video_path in tqdm(iter_videos_in_range(video_root, K_start, K_end, num_gpus, gpu_id),
                            desc="Processing videos", unit="video"):
         filename = video_path.name
         save_path = save_root / f"{video_path.stem}.json"
@@ -92,6 +94,8 @@ def keyframe_extraction_pipeline(
     threshold: float = 0.92,
     K_start: int = 1,
     K_end: int = 20,
+    num_gpus: int = 1,
+    gpu_id: int = 0,
 ):
     logger.info("Starting keyframe extraction pipeline")
     logger.info(f"Shot directory: {shot_dir}")
@@ -126,9 +130,13 @@ def keyframe_extraction_pipeline(
             )
     logger.info("Initialized KeyframeExtractionService")
 
-    for shot_path in tqdm(iter_json_in_range(shot_root, K_start, K_end),
+    for shot_path in tqdm(iter_json_in_range(shot_root, K_start, K_end, num_gpus, gpu_id),
                           desc="Processing shot files", unit="file"):
         keyframe_path = keyframe_root / shot_path.name
+        if keyframe_path.exists():
+            logger.info(f"Skipping {shot_path.name}, already exists")
+            continue
+            
         logger.info(f"Processing shot file: {shot_path}")
 
         try:
@@ -171,7 +179,8 @@ def keyframe_extraction_pipeline(
             if len(parts) < 2:
                 raise ValueError(f"Unexpected video name format: {video_name}")
             K_name, V_name = parts[0], parts[1]
-            if not K_name.startswith("K") or not V_name.startswith("V"):
+            # if not K_name.startswith("K") or not V_name.startswith("V"):
+            if not K_name.startswith(("K", "L")) or not V_name.startswith("V"):
                 raise ValueError(f"Unexpected video name format: {video_name}")
 
             save_img_folder = image_root / K_name / V_name
@@ -189,7 +198,8 @@ def keyframe_extraction_pipeline(
                     for current_index, frame in tqdm(
                         enumerate(container.decode(video_stream)),
                         desc=f"Saving keyframes for {video_name}",
-                        unit="frame"
+                        unit="frame",
+                        disable=True
                     ):
                         if current_index in target_indices:
                             try:
@@ -230,7 +240,7 @@ def keyframe_extraction_pipeline(
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
-def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int):
+def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int, num_gpus: int = 1, gpu_id: int = 0):
     cfg_path = Path(config_path)
     if not cfg_path.exists():
         logger.error(f"Config file {config_path} does not exist")
@@ -240,9 +250,9 @@ def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int):
         cfg = yaml.safe_load(f)
 
     if pipeline == "shot_extraction":
-        shot_extraction_pipeline(**cfg.get("shot_extraction", {}), K_start=K_start, K_end=K_end)
+        shot_extraction_pipeline(**cfg.get("shot_extraction", {}), K_start=K_start, K_end=K_end, num_gpus=num_gpus, gpu_id=gpu_id)
     elif pipeline == "keyframe_extraction":
-        keyframe_extraction_pipeline(**cfg.get("keyframe_extraction", {}), K_start=K_start, K_end=K_end)
+        keyframe_extraction_pipeline(**cfg.get("keyframe_extraction", {}), K_start=K_start, K_end=K_end, num_gpus=num_gpus, gpu_id=gpu_id)
     else:
         logger.error(f"Unknown pipeline: {pipeline}")
 
@@ -262,6 +272,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--K_end", type=int, default=20, help="Ending folder index for keyframe extraction"
     )
+    parser.add_argument(
+        "--num_gpus", type=int, default=1, help="Number of GPUs to split the workload across"
+    )
+    parser.add_argument(
+        "--gpu_id", type=int, default=0, help="Internal use only. The specific GPU ID this process handles"
+    )
 
 
     args = parser.parse_args()
@@ -269,4 +285,28 @@ if __name__ == "__main__":
     if not Path(args.config).exists():
         logger.error(f"Config file {args.config} not found")
     else:
-        run_pipeline(args.pipeline, args.config, args.K_start, args.K_end)
+        if args.num_gpus > 1 and args.gpu_id == 0 and "CUDA_VISIBLE_DEVICES" not in os.environ:
+            import subprocess
+            import sys
+            logger.info(f"Auto-spawning {args.num_gpus} processes for multi-GPU execution...")
+            processes = []
+            for i in range(args.num_gpus):
+                env = os.environ.copy()
+                env["CUDA_VISIBLE_DEVICES"] = str(i)
+                cmd = [sys.executable, "-m", "src.services.processing.pipeline"] + sys.argv[1:]
+                
+                if "--gpu_id" in cmd:
+                    idx = cmd.index("--gpu_id")
+                    cmd[idx+1] = str(i)
+                else:
+                    cmd.extend(["--gpu_id", str(i)])
+                
+                logger.info(f"Spawning GPU {i}: {' '.join(cmd)}")
+                p = subprocess.Popen(cmd, env=env)
+                processes.append(p)
+            
+            for p in processes:
+                p.wait()
+            logger.info("All multi-GPU processes finished.")
+        else:
+            run_pipeline(args.pipeline, args.config, args.K_start, args.K_end, args.num_gpus, args.gpu_id)

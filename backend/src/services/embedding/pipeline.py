@@ -40,7 +40,9 @@ def embedding_extraction_pipeline(
     config: Dict[str, Any],
     batch_size: int = 32,
     K_start: int = None,
-    K_end: int = None
+    K_end: int = None,
+    num_gpus: int = 1,
+    gpu_id: int = 0
 ):
     logger.info("Starting embedding extraction pipeline")
     logger.info(f"Image directory: {image_dir}")
@@ -55,16 +57,29 @@ def embedding_extraction_pipeline(
 
     list_image_folder = []
     for k_folder in sorted(os.listdir(image_dir)):
-        if not k_folder.startswith("K"): continue
-        if K_start is not None and int(k_folder[1:]) < K_start:
+        # if not k_folder.startswith("K"): continue
+        if not k_folder.startswith(("K", "L")): continue
+        try:
+            k_num = int(k_folder[1:])
+        except ValueError:
             continue
-        if K_end is not None and int(k_folder[1:]) > K_end:
+        if K_start is not None and k_num < K_start:
+            continue
+        if K_end is not None and k_num > K_end:
             continue
         k_path = os.path.join(image_dir, k_folder)
         if not os.path.isdir(k_path): continue
         for v_folder in sorted(os.listdir(k_path)):
             if not v_folder.startswith("V"): continue
             if os.path.isdir(os.path.join(k_path, v_folder)):
+                if num_gpus > 1:
+                    try:
+                        v_part = v_folder.split(".")[0] # V001
+                        v_num = int(v_part[1:])
+                        if v_num % num_gpus != gpu_id:
+                            continue
+                    except Exception:
+                        pass
                 list_image_folder.append(os.path.join(k_folder, v_folder))
     logger.info(f"Total folders to process: {len(list_image_folder)}, {list_image_folder}")
 
@@ -100,7 +115,7 @@ def get_models_by_name(cfg, model_name):
             return model
     return None
 
-def run_pipeline(config_path: str, model_name: str, K_start: int=None, K_end: int=None):
+def run_pipeline(config_path: str, model_name: str, K_start: int=None, K_end: int=None, num_gpus: int=1, gpu_id: int=0):
     with open(config_path, "r") as f:
         cfg = yaml.safe_load(f)
 
@@ -126,7 +141,9 @@ def run_pipeline(config_path: str, model_name: str, K_start: int=None, K_end: in
         config=model_config,
         batch_size=batch_size,
         K_start=K_start,
-        K_end=K_end
+        K_end=K_end,
+        num_gpus=num_gpus,
+        gpu_id=gpu_id
     )
 
 
@@ -136,7 +153,33 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", type=str, required=True, help="Model provider name")
     parser.add_argument("--K_start", type=int, help="Start index for processing")
     parser.add_argument("--K_end", type=int, help="End index for processing")
+    parser.add_argument("--num_gpus", type=int, default=1, help="Number of GPUs to split the workload across")
+    parser.add_argument("--gpu_id", type=int, default=0, help="Internal use only")
 
     args = parser.parse_args()
 
-    run_pipeline(args.config, args.model_name, args.K_start, args.K_end)
+    if args.num_gpus > 1 and args.gpu_id == 0 and "CUDA_VISIBLE_DEVICES" not in os.environ:
+        import subprocess
+        import sys
+        logger.info(f"Auto-spawning {args.num_gpus} processes for multi-GPU execution...")
+        processes = []
+        for i in range(args.num_gpus):
+            env = os.environ.copy()
+            env["CUDA_VISIBLE_DEVICES"] = str(i)
+            cmd = [sys.executable, "-m", "src.services.embedding.pipeline"] + sys.argv[1:]
+            
+            if "--gpu_id" in cmd:
+                idx = cmd.index("--gpu_id")
+                cmd[idx+1] = str(i)
+            else:
+                cmd.extend(["--gpu_id", str(i)])
+            
+            logger.info(f"Spawning GPU {i}: {' '.join(cmd)}")
+            p = subprocess.Popen(cmd, env=env)
+            processes.append(p)
+        
+        for p in processes:
+            p.wait()
+        logger.info("All multi-GPU processes finished.")
+    else:
+        run_pipeline(args.config, args.model_name, args.K_start, args.K_end, args.num_gpus, args.gpu_id)

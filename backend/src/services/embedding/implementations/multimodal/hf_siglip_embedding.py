@@ -59,6 +59,14 @@ class HuggingFaceSigLIPEmbedding(EmbeddingModel):
                     batch = texts[index : index + batch_size]
                     text_tokens = self.tokenizer(batch, truncation=True, padding=True, return_tensors="pt").to(self.device)
                     text_features = self.model.get_text_features(**text_tokens)
+                    if hasattr(text_features, "pooler_output"):
+                        text_features = text_features.pooler_output
+                    elif hasattr(text_features, "text_embeds"):
+                        text_features = text_features.text_embeds
+                    elif hasattr(text_features, "image_embeds"):
+                        # Just in case
+                        text_features = text_features.image_embeds
+                        
                     if normalize:
                         text_features = torch.nn.functional.normalize(text_features, dim=-1)
                     embeddings_list.append(text_features.cpu())
@@ -112,6 +120,11 @@ class HuggingFaceSigLIPEmbedding(EmbeddingModel):
                     batch = processed_images[index : index + batch_size]
                     image_tensors = self.processor(images=batch, return_tensors="pt").to(self.device)
                     image_features = self.model.get_image_features(**image_tensors)
+                    if hasattr(image_features, "pooler_output"):
+                        image_features = image_features.pooler_output
+                    elif hasattr(image_features, "image_embeds"):
+                        image_features = image_features.image_embeds
+                        
                     if normalize:
                         image_features = torch.nn.functional.normalize(image_features, dim=-1)
                     embeddings_list.append(image_features.cpu())
