@@ -34,6 +34,8 @@ def shot_extraction_pipeline(
     config: Optional[Dict[str, Any]] = None,
     K_start: int = 1,
     K_end: int = 20,
+    V_start: int = 1,
+    V_end: int = 9999,
     num_gpus: int = 1,
     gpu_id: int = 0,
 ):
@@ -53,7 +55,7 @@ def shot_extraction_pipeline(
     )
     logger.info(f"Registered extractor '{extractor_name}' with provider '{provider_name}'")
 
-    for video_path in tqdm(iter_videos_in_range(video_root, K_start, K_end, num_gpus, gpu_id),
+    for video_path in tqdm(iter_videos_in_range(video_root, K_start, K_end, V_start, V_end, num_gpus, gpu_id),
                            desc="Processing videos", unit="video"):
         filename = video_path.name
         save_path = save_root / f"{video_path.stem}.json"
@@ -94,6 +96,8 @@ def keyframe_extraction_pipeline(
     threshold: float = 0.92,
     K_start: int = 1,
     K_end: int = 20,
+    V_start: int = 1,
+    V_end: int = 9999,
     num_gpus: int = 1,
     gpu_id: int = 0,
 ):
@@ -130,7 +134,7 @@ def keyframe_extraction_pipeline(
             )
     logger.info("Initialized KeyframeExtractionService")
 
-    for shot_path in tqdm(iter_json_in_range(shot_root, K_start, K_end, num_gpus, gpu_id),
+    for shot_path in tqdm(iter_json_in_range(shot_root, K_start, K_end, V_start, V_end, num_gpus, gpu_id),
                           desc="Processing shot files", unit="file"):
         keyframe_path = keyframe_root / shot_path.name
         if keyframe_path.exists():
@@ -240,7 +244,7 @@ def keyframe_extraction_pipeline(
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
-def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int, num_gpus: int = 1, gpu_id: int = 0):
+def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int, V_start: int, V_end: int, num_gpus: int = 1, gpu_id: int = 0):
     cfg_path = Path(config_path)
     if not cfg_path.exists():
         logger.error(f"Config file {config_path} does not exist")
@@ -250,9 +254,9 @@ def run_pipeline(pipeline: str, config_path: str, K_start: int, K_end: int, num_
         cfg = yaml.safe_load(f)
 
     if pipeline == "shot_extraction":
-        shot_extraction_pipeline(**cfg.get("shot_extraction", {}), K_start=K_start, K_end=K_end, num_gpus=num_gpus, gpu_id=gpu_id)
+        shot_extraction_pipeline(**cfg.get("shot_extraction", {}), K_start=K_start, K_end=K_end, V_start=V_start, V_end=V_end, num_gpus=num_gpus, gpu_id=gpu_id)
     elif pipeline == "keyframe_extraction":
-        keyframe_extraction_pipeline(**cfg.get("keyframe_extraction", {}), K_start=K_start, K_end=K_end, num_gpus=num_gpus, gpu_id=gpu_id)
+        keyframe_extraction_pipeline(**cfg.get("keyframe_extraction", {}), K_start=K_start, K_end=K_end, V_start=V_start, V_end=V_end, num_gpus=num_gpus, gpu_id=gpu_id)
     else:
         logger.error(f"Unknown pipeline: {pipeline}")
 
@@ -271,6 +275,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--K_end", type=int, default=20, help="Ending folder index for keyframe extraction"
+    )
+    parser.add_argument(
+        "--V_start", type=int, default=1, help="Starting video index"
+    )
+    parser.add_argument(
+        "--V_end", type=int, default=9999, help="Ending video index"
     )
     parser.add_argument(
         "--num_gpus", type=int, default=1, help="Number of GPUs to split the workload across"
@@ -309,4 +319,4 @@ if __name__ == "__main__":
                 p.wait()
             logger.info("All multi-GPU processes finished.")
         else:
-            run_pipeline(args.pipeline, args.config, args.K_start, args.K_end, args.num_gpus, args.gpu_id)
+            run_pipeline(args.pipeline, args.config, args.K_start, args.K_end, args.V_start, args.V_end, args.num_gpus, args.gpu_id)
