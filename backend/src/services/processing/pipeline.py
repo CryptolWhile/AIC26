@@ -100,6 +100,7 @@ def keyframe_extraction_pipeline(
     V_end: int = 9999,
     num_gpus: int = 1,
     gpu_id: int = 0,
+    video_dir: str = "",
 ):
     logger.info("Starting keyframe extraction pipeline")
     logger.info(f"Shot directory: {shot_dir}")
@@ -162,6 +163,9 @@ def keyframe_extraction_pipeline(
             ]
 
             video_path = Path(shot_data.get("video_path", ""))
+            if not video_path.exists() and video_dir:
+                video_path = Path(video_dir) / video_path.name
+
             video_fps = get_fps(str(video_path))
 
             video_shots = VideoShots(
