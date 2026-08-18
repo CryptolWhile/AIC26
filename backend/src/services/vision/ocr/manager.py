@@ -1,7 +1,8 @@
 from typing import Dict, Optional, Type, Any
 
 from src.services.vision.ocr.interface import OCRModel
-from src.services.vision.ocr.implementations import MMOCRVietOCRModel
+# from src.services.vision.ocr.implementations import MMOCRVietOCRModel
+from src.services.vision.ocr.implementations import EasyOCRVietOCRModel
 
 
 class OCRManager:
@@ -11,7 +12,8 @@ class OCRManager:
         self.initialize_providers()
     
     def initialize_providers(self) -> None:
-        self.register_provider("mmocr", MMOCRVietOCRModel)
+        # self.register_provider("mmocr", MMOCRVietOCRModel)
+        self.register_provider("easyocr", EasyOCRVietOCRModel)
     
     def register_provider(self, provider_name: str, provider: Type[OCRModel]) -> None:
         self.providers[provider_name] = provider

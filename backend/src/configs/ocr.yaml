@@ -1,0 +1,6 @@
+ocr_extraction:
+  image_dir: "processed/images"
+  save_dir: "processed/ocr"
+  provider_name: "easyocr"
+  model_name: "vietocr"
+  config: {}
