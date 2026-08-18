@@ -1,0 +1,17 @@
+# Ignore environment variables
+.env
+**/.env
+
+# Ignore database volumes and heavy data
+volumes/
+backend/processed/
+backend/data/
+**/data/
+
+# Mac OS files
+.DS_Store
+**/.DS_Store
+kaggle_backend.zip
+.DS_Store
+kaggle_backend.zip
+.DS_Store

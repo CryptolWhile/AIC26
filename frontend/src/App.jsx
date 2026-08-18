@@ -356,10 +356,10 @@ function App() {
       await axios.post("http://localhost:8000/api/submit/", {
         [queryName]: csvLines
       });
-      alert(`🎉 Đã lưu thành công ${csvLines.length} khung hình vào thư mục submission.zip của Backend!`);
+      alert(`Đã lưu thành công ${csvLines.length} khung hình vào thư mục submission.zip của Backend!`);
     } catch (err) {
       console.error(err);
-      alert("❌ Có lỗi xảy ra khi lưu Output. Hãy kiểm tra Backend!");
+      alert("Có lỗi xảy ra khi lưu Output. Hãy kiểm tra Backend!");
     }
   }, [allOrder]);
 
