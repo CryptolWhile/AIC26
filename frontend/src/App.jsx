@@ -94,7 +94,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-const MEDIA_INFO = '/media_info/';
+const MEDIA_INFO = '/media-info/';
 function getNeighborFrames(frameName, offset = 10, setNeighborFrames, setVideoDialog, setFps) {
   let split = frameName.split('/');
   let src = MEDIA_INFO + split[0] + '_' + split[1] + '.json';
@@ -102,16 +102,30 @@ function getNeighborFrames(frameName, offset = 10, setNeighborFrames, setVideoDi
     .then((res) => res.text())
     .then((text) => {
       let data = JSON.parse(text);
-      let idx = data.listFrames.indexOf(split[2]);
-      if (idx === -1) {
-        setNeighborFrames([]); setVideoDialog(''); setFps(25); return;
+      
+      // Chuyển đổi watch_url thành link embed để iframe có thể phát được
+      let videoUrl = '';
+      if (data.watch_url) {
+        videoUrl = data.watch_url.replace('watch?v=', 'embed/');
+      } else if (data.videoSrc) {
+        videoUrl = data.videoSrc;
       }
-      let start = Math.max(0, idx - offset);
-      let end = Math.min(data.listFrames.length, idx + offset + 1);
-      let res = data.listFrames.slice(start, end).map(f => split[0] + '/' + split[1] + '/' + f);
-      setNeighborFrames(res);
-      setVideoDialog(data.videoSrc);
-      setFps(data.fps);
+      setVideoDialog(videoUrl);
+      setFps(data.fps || 25);
+
+      if (data.listFrames) {
+        let idx = data.listFrames.indexOf(split[2]);
+        if (idx === -1) {
+          setNeighborFrames([]); return;
+        }
+        let start = Math.max(0, idx - offset);
+        let end = Math.min(data.listFrames.length, idx + offset + 1);
+        let res = data.listFrames.slice(start, end).map(f => split[0] + '/' + split[1] + '/' + f);
+        setNeighborFrames(res);
+      } else {
+        // Tránh lỗi crash nếu file JSON mới không có mảng listFrames
+        setNeighborFrames([]);
+      }
     })
     .catch((e) => {
       console.error(e);

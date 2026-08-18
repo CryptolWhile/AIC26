@@ -7,8 +7,13 @@ import { Typography, Input, Dialog, DialogTitle, DialogActions, DialogContent, I
 import CloseIcon from '@mui/icons-material/Close';
 import { useState } from 'react';
 function getVideoName(path) {
-  let videoName = path.split('/').slice(-3, -1).join('/');
-  return videoName;
+  // Đổi tất cả dấu gạch chéo '/' thành gạch dưới '_' để đồng bộ
+  const normalizedPath = path.replace(/\//g, '_');
+  const parts = normalizedPath.split('_');
+  if (parts.length >= 2) {
+    return `${parts[0]}_${parts[1]}`;
+  }
+  return path;
 }
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -28,6 +33,8 @@ const ResultGroup = React.memo(function ResultGroup({ resultW = 200, resultH = 1
   const [neighborFrames, setNeighborFrames] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [frameDialog, setFrameDialog] = useState('');
+  const [currentVideoName, setCurrentVideoName] = useState('');
+
   function handleCloseDialog(e) {
     e.stopPropagation();
     setOpenDialog(false);
@@ -35,21 +42,28 @@ const ResultGroup = React.memo(function ResultGroup({ resultW = 200, resultH = 1
   async function handleOpenDialog(filename) {
     setOpenDialog(true);
     setFrameDialog(filename);
-    let videoName = await getVideoName(filename);
+    let videoName = getVideoName(filename);
+    setCurrentVideoName(videoName);
+    
     try {
       let res = await fetch(`/${videoName}/frames.txt`);
-      let resText = await res.text();
-      let listFrame = resText.split("\n");
-      let index = listFrame.indexOf(filename);
-      if (index !== -1) {
-        let start = Math.max(0, index - 10);
-        let end = Math.min(listFrame.length, index + 11);
-        setNeighborFrames(listFrame.slice(start, end));
+      if (res.ok) {
+          let resText = await res.text();
+          let listFrame = resText.split("\n");
+          let index = listFrame.indexOf(filename);
+          if (index !== -1) {
+            let start = Math.max(0, index - 10);
+            let end = Math.min(listFrame.length, index + 11);
+            setNeighborFrames(listFrame.slice(start, end));
+          } else {
+            setNeighborFrames([]);
+          }
       } else {
-        setNeighborFrames([]);
+          setNeighborFrames([]);
       }
     } catch (err) {
       console.error("Lỗi fetch frames:", err);
+      setNeighborFrames([]);
     }
 
   };
@@ -88,7 +102,17 @@ const ResultGroup = React.memo(function ResultGroup({ resultW = 200, resultH = 1
           </IconButton>
           <DialogContent dividers sx={{ display: 'flex', flexDirection: 'row', columnGap: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', width: '40%', alignItems: 'center', justifyContent: 'center' }}>
-              <CardMedia component="iframe" width="560" height="315" src={"https://www.youtube.com/embed/Rzpw5WR7nAY?si=78k3I2-zkCMnKFwi&amp;start=255"} controls allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+              {currentVideoName && (
+                <CardMedia 
+                  key={currentVideoName}
+                  component="video" 
+                  width="560" 
+                  height="315" 
+                  src={`${VIDEO_DIR}${currentVideoName}.mp4`} 
+                  controls 
+                  autoPlay 
+                />
+              )}
             </Box>
             <Grid container spacing={'14px'} sx={{ width: '60%', height: '100%', overflowX: 'hidden', overflowY: 'scroll', alignContent: 'flex-start', justifyContent: 'center', marginLeft: 'auto', borderRadius: '16px' }}>
               {neighborFrames.length > 0 && neighborFrames.map((frame,) => (
