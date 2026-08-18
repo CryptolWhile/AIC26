@@ -51,6 +51,15 @@ class MilvusDatabase(Database):
             self.is_connected = False
             logger.error(f"Failed to connect to Milvus: {str(e)}")
             raise
+
+    def _ping(self) -> bool:
+        """Override base ping - actually verify gRPC connection is alive (handles post-fork issues)."""
+        try:
+            utility.list_collections()
+            return True
+        except Exception:
+            self.is_connected = False
+            return False
     
     def create_collection(self, collection_name: str, schema: List[FieldSchema], index_params: Optional[Dict[str, Any]] = None) -> Collection:
         self.ensure_connection()

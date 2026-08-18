@@ -14,6 +14,13 @@ class Database(ABC):
         """Set up database connection"""
         pass
 
+    def _ping(self) -> bool:
+        """Check if connection is actually alive. Override in subclass for specific checks."""
+        try:
+            return self.is_connected
+        except Exception:
+            return False
+
     @abstractmethod
     def close(self) -> None:
         """Disconnect from the database"""
@@ -60,8 +67,13 @@ class Database(ABC):
         pass
     
     def ensure_connection(self) -> None:
-        """Ensure connection, reconnect if not connected"""
-        if not self.is_connected:
-            self.connect() 
+        """Ensure connection is alive, reconnect if not (handles post-fork gRPC issues)."""
+        if not self.is_connected or not self._ping():
+            logger.warning("Milvus connection lost (possibly due to fork). Reconnecting...")
+            try:
+                connections.disconnect(alias="default")
+            except Exception:
+                pass
+            self.connect()
 
     

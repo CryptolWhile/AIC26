@@ -5,7 +5,7 @@ class Reranking:
         pass
 
     def rrf(self, list1: List[Dict[str, Any]], list2: List[Dict[str, Any]], 
-            k: int = 60, id_field: str = 'id') -> List[Dict[str, Any]]:
+            k: int = 60, id_field: str = 'image_id') -> List[Dict[str, Any]]:
         scores = {}     # Dictionary lưu tổng điểm RRF của từng item (Key: item_id, Value: tổng điểm)
         item_data = {}  # Dictionary lưu nội dung chi tiết của item để sau này tái tạo lại kết quả
         
@@ -63,7 +63,7 @@ class Reranking:
         return sorted(reranked_results, key=lambda x: x['score'], reverse=True)
 
     def rrf_multiple(self, *lists: List[Dict[str, Any]], 
-                       k: int = 60, id_field: str = 'id') -> List[Dict[str, Any]]:
+                       k: int = 60, id_field: str = 'image_id') -> List[Dict[str, Any]]:
 
         if len(lists) == 0:
             return []
@@ -90,11 +90,11 @@ class Reranking:
         # Trả về kết quả cuối cùng sắp xếp theo điểm giảm dần
         return sorted(result, key=lambda x: x['score'], reverse=True)
 
-    def rrf_services(self, list:List[Dict[str, Any]], k:int = 60, id_field:str = 'id') -> List[Dict[str, Any]]:
+    def rrf_services(self, list:List[Dict[str, Any]], k:int = 60, id_field:str = 'image_id') -> List[Dict[str, Any]]:
 
-        semantic_list = sorted(list, key=lambda x: x['semantic'], reverse=True)
+        semantic_list = sorted(list, key=lambda x: x.get('semantic', 0), reverse=True)
 
-        ocr_list = sorted(list, key=lambda x: x['ocr'], reverse=True)
+        ocr_list = sorted(list, key=lambda x: x.get('ocr', 0), reverse=True)
         # (Dòng chú thích cho ASR - giọng nói nếu sau này muốn mở rộng)
         
         # asr_list = sorted(list, key=lambda x: x['asr'], reverse=True)
@@ -108,16 +108,16 @@ class Reranking:
     def weighted_sum(self, list:List[Dict[str, Any]], weights:List[float]) -> List[Dict[str, Any]]:
         for item in list:
             # Tính tổng điểm = (điểm semantic * trọng số 1) + (điểm asr * trọng số 2) + (điểm ocr * trọng số 3)
-            score = item['semantic'] * weights[0] + item['asr'] * weights[1] + item['ocr'] * weights[2]
+            score = item.get('semantic', 0) * weights[0] + item.get('asr', 0) * weights[1] + item.get('ocr', 0) * weights[2]
             item['score'] = score  
 
-        return sorted(list, key=lambda x: x['score'], reverse=True)
+        return sorted(list, key=lambda x: x.get('score', 0), reverse=True)
 
     def combined_reranking(self, 
             list:List[Dict[str, Any]],
             weights:List[float]=[0.5, 0.3, 0.2],
             k:int = 60, 
-            id_field:str = 'id') -> List[Dict[str, Any]]:
+            id_field:str = 'image_id') -> List[Dict[str, Any]]:
 
         rrf_result = self.rrf_services(list, k=k, id_field=id_field)
         # (Mặc định: 50% semantic, 30% asr, 20% ocr)

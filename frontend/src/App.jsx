@@ -184,7 +184,7 @@ function App() {
   const [isTrake, setIsTrake] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState('');
   const [selectedVideo, setSelectedVideo] = useState('');
-  const [selectedRerank, setSelectedRerank] = useState('');
+  const [selectedRerank, setSelectedRerank] = useState('All');
   const [videoOptions, setVideoOptions] = useState([]);
   const currentSceneRef = useRef(), ocrSearchRef = useRef(), VQARef = useRef();
   const [extraPromptRefs, setExtraPromptRefs] = useState([]);
@@ -195,7 +195,7 @@ function App() {
     if(currentSceneRef.current) currentSceneRef.current.value = '';
     if(ocrSearchRef.current) ocrSearchRef.current.value = ''; 
     if(VQARef.current) VQARef.current.value = '';
-    setSelectedDataset(''); setSelectedVideo(''); setGroupedRes([]); setTrakeRes([]); setResult([]);
+    setSelectedDataset(''); setSelectedVideo(''); setSelectedRerank('All'); setGroupedRes([]); setTrakeRes([]); setResult([]);
     setAllOrder(new Map()); setGroupOrder(new Map());
   }, []);
 
@@ -209,7 +209,8 @@ function App() {
       "dataset": selectedDataset || "All",
       "video": selectedVideo || "All",
       "n_results": nResults || 150,
-      "model": selectedModel.length ? selectedModel : ["hf_clip_L"]
+      "model": selectedModel.length ? selectedModel : ["hf_clip_L"],
+      "rerank_method": selectedRerank || "All"
     };
     const res = await searchUser(query, traketype);
     if (traketype) {
@@ -220,11 +221,31 @@ function App() {
       setGroupedRes(groupFramesByVideo(res));
       setAllOrder(new Map());
     }
-  }, [extraPromptRefs, selectedDataset, selectedVideo, nResults, selectedModel]);
+  }, [extraPromptRefs, selectedDataset, selectedVideo, nResults, selectedModel, selectedRerank]);
 
   const deselectAllClick = useCallback(() => {
     setAllOrder(new Map()); setGroupOrder(new Map());
   }, []);
+
+  const selectAllClick = useCallback(() => {
+    if (isTrake) {
+      setGroupOrder(() => {
+        const newMap = new Map();
+        trakeRes.forEach((resultGroup, idx) => {
+          newMap.set(idx, idx + 1);
+        });
+        return newMap;
+      });
+    } else {
+      setAllOrder(() => {
+        const newMap = new Map();
+        result.forEach((frame, idx) => {
+          newMap.set(frame, idx + 1);
+        });
+        return newMap;
+      });
+    }
+  }, [result, isTrake, trakeRes]);
 
   const handleAddPrompt = useCallback(() => {
     setExtraPromptRefs(prev => [...prev, React.createRef()]);
@@ -370,7 +391,7 @@ function App() {
           
           <Box sx={{ display: 'flex', gap: 2 }}>
             <CustomAutocomplete width='50%' options={datasets} label="Dataset" value={selectedDataset} onChange={(_, v) => { setSelectedDataset(v); setVideoOptions(videos[v] || []) }} />
-            <CustomAutocomplete width='50%' options={videoOptions} label="Video" value={selectedVideo} onChange={(_, v) => setSelectedVideo(v)} />
+            <CustomAutocomplete width='50%' options={videoOptions} label="Video" value={selectedVideo} onChange={(_, v) => setSelectedVideo(v)} freeSolo onInputChange={(_, newInputValue) => setSelectedVideo(newInputValue)} />
           </Box>
           
           <CustomAutocomplete width='100%' options={rerankMethods} label="Rerank Method" value={selectedRerank} onChange={(_, v) => setSelectedRerank(v)} />
@@ -387,7 +408,10 @@ function App() {
         </Box>
 
         <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid rgba(15,23,42,0.1)', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <CustomButton title="Deselect All" size="large" onClick={deselectAllClick} />
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <CustomButton title="Select All" size="medium" onClick={selectAllClick} sx={{ flex: 1 }} />
+            <CustomButton title="Deselect All" size="medium" onClick={deselectAllClick} sx={{ flex: 1 }} />
+          </Box>
           <CustomButton disabled={isTrake} title={isGroup ? "Ungroup Results" : "Group by Video"} size="large" onClick={() => setIsGroup(!isGroup)} />
           <CustomTextField label="VQA Answer" inputRef={VQARef} multiline rows={2} />
           <CustomButton title="Save Output" size="large" primary onClick={handleSaveOutput} />

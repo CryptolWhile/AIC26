@@ -320,7 +320,8 @@ class RetrievalService:
                         )
                     elif rerank_method == "weighted_sum":
                         single_search_results = self.reranking.weighted_sum(
-                            formatted_search_results
+                            formatted_search_results,
+                            weights=[1.0, 0.0, 0.0]
                         )
                     else:
                         single_search_results = self.reranking.combined_reranking(
@@ -359,7 +360,8 @@ class RetrievalService:
                     )
                 elif rerank_method == "weighted_sum":
                     _results = self.reranking.weighted_sum(
-                        formatted_search_results
+                        formatted_search_results,
+                        weights=[1.0, 0.0, 0.0]
                     )
                 else:
                     _results = self.reranking.combined_reranking(
@@ -447,29 +449,29 @@ class RetrievalService:
             return []
 
     def _union_all_models(self, results: List[List[Dict[str, Any]]], limit: int, rerank_method: str) -> List[List[Dict[str, Any]]]:
-        """Combine and rank search results from different modalities."""
+        """Combine and rank search results from different models."""
         try:
-            if len(results) == 1:
-                final_res = results[0]
-            elif rerank_method == "rrf":
-                final_res = self.reranking.rrf_services(
-                    results
-                )
-            elif rerank_method == "weighted_sum":
-                final_res = self.reranking.weighted_sum(
-                    results
-                )
+            # Lọc bỏ các kết quả rỗng (ví dụ model H chưa có dữ liệu)
+            non_empty = [r for r in results if r]
+            if not non_empty:
+                return [[]]
+
+            # Nếu chỉ có 1 model có kết quả, trả về luôn
+            if len(non_empty) == 1:
+                final_res = non_empty[0]
             else:
-                final_res = self.reranking.combined_reranking(
-                    results
-                )
+                # Nếu có nhiều hơn 1 model, chúng ta GỘP chúng bằng rrf_multiple
+                # rrf_multiple nhận n tham số là n danh sách kết quả
+                final_res = self.reranking.rrf_multiple(*non_empty)
                 
-            # Sort by score descending if possible, although reranking should have done it
+            # Đảm bảo kết quả cuối cùng được sắp xếp
             final_res = sorted(final_res, key=lambda x: x.get('score', 0) or 0, reverse=True)
             return [final_res[:limit]]
             
         except Exception as e:
             logger.error(f"Error combining results: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
             return [[]]
 
     def _format_search_results(self, *results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
