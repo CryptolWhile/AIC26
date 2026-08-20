@@ -92,12 +92,12 @@ class Reranking:
 
     def rrf_services(self, list:List[Dict[str, Any]], k:int = 60, id_field:str = 'image_id') -> List[Dict[str, Any]]:
 
-        semantic_list = sorted(list, key=lambda x: x.get('semantic', 0), reverse=True)
+        # Semantic dùng Milvus (metric_type="L2"). L2 distance càng NHỎ càng tốt -> phải xếp tăng dần (reverse=False)
+        semantic_list = sorted(list, key=lambda x: x.get('semantic', float('inf')), reverse=False)
 
+        # OCR/ASR thường là độ chính xác (confidence), càng LỚN càng tốt -> xếp giảm dần (reverse=True)
         ocr_list = sorted(list, key=lambda x: x.get('ocr', 0), reverse=True)
-        # (Dòng chú thích cho ASR - giọng nói nếu sau này muốn mở rộng)
-        
-        # asr_list = sorted(list, key=lambda x: x['asr'], reverse=True)
+        # asr_list = sorted(list, key=lambda x: x.get('asr', 0), reverse=True)
 
         # Gộp 2 danh sách qua thuật toán rrf_multiple
         return self.rrf_multiple(semantic_list, 
@@ -107,11 +107,15 @@ class Reranking:
 
     def weighted_sum(self, list:List[Dict[str, Any]], weights:List[float]) -> List[Dict[str, Any]]:
         for item in list:
-            # Tính tổng điểm = (điểm semantic * trọng số 1) + (điểm asr * trọng số 2) + (điểm ocr * trọng số 3)
-            score = item.get('semantic', 0) * weights[0] + item.get('asr', 0) * weights[1] + item.get('ocr', 0) * weights[2]
+            # Semantic là L2 distance (0->2), chuyển ngược lại: lấy số âm hoặc (2 - distance) để distance càng nhỏ điểm càng cao.
+            # Ở đây em dùng số âm (-semantic) để đồng bộ với logic "điểm càng to càng tốt".
+            semantic_score = -item.get('semantic', float('inf'))
+            
+            # Tính tổng điểm
+            score = semantic_score * weights[0] + item.get('asr', 0) * weights[1] + item.get('ocr', 0) * weights[2]
             item['score'] = score  
 
-        return sorted(list, key=lambda x: x.get('score', 0), reverse=True)
+        return sorted(list, key=lambda x: x.get('score', float('-inf')), reverse=True)
 
     def combined_reranking(self, 
             list:List[Dict[str, Any]],

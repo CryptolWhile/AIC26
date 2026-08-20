@@ -2,6 +2,10 @@ export const datasets = [
     'All',
     'L26',
     'L22',
+    'L23',
+    'L30',
+    'L27',
+    'L28'
 ];
 
 const L26_videos = ['All'];
