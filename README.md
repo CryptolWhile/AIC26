@@ -59,28 +59,45 @@ AIC26/
 └── docker-compose.yml        # Infrastructure setup (Milvus, Elastic, Mongo)
 ```
 
-## 🚀 Installation Guide
+## 🚀 Installation Guide (Mac & Windows)
 
 ### System Requirements
+- **OS**: macOS or Windows 10/11 (WSL2 or Git Bash recommended for Windows)
 - [Python 3.10+](https://www.python.org) (Conda recommended)
 - [Node.js & npm](https://nodejs.org/en/download/)
-- [Docker & Docker Compose](https://docs.docker.com/get-docker/)
+- [Docker & Docker Desktop](https://docs.docker.com/get-docker/) (Must be running)
 
-### 1. Database Infrastructure (Docker)
-Start the core databases (Milvus Standalone, Elasticsearch, MongoDB, MinIO, etcd) via Docker:
+### 1. Environment Setup (.env)
+Before starting, you need to configure your environment variables.
+In the root directory of the project, create or edit the `.env` file based on `.env.example` (if available) or use the default setup:
 ```bash
+# Example .env configuration
+MONGO_USER=AIC26
+MONGO_PASSWORD=abc
+MONGODB_URI=mongodb://AIC26:abc@localhost:27017
+ELASTIC_URI=http://localhost:9200
+MILVUS_HOST=127.0.0.1
+MILVUS_PORT=19530
+```
+
+### 2. Database Infrastructure (Docker)
+Start the core databases (Milvus Standalone, Elasticsearch, MongoDB, MinIO, etcd) via Docker. Make sure Docker Desktop is open.
+```bash
+# Mac or Windows (CMD/Powershell/Terminal)
 cd AIC26
 docker-compose up -d
 ```
-*(Wait ~30 seconds for all database services to fully initialize before running ingestion).*
+*(Wait ~30-60 seconds for all database services to fully initialize).*
 
-### 2. Backend Setup
+### 3. Backend Setup & Downloading Models
+The backend relies on large Vision-Language models from HuggingFace (OpenCLIP, SigLIP). By default, these models will **automatically download** to your local cache (`~/.cache/huggingface` on Mac, or `C:\Users\<User>\.cache\huggingface` on Windows) the first time you run the search or extraction pipeline. Ensure you have a stable internet connection for the first run (models are ~1-3GB each).
+
 ```bash
 cd AIC26/backend
 
 # Create and activate conda environment
-conda create -n dezus_py310 python=3.10
-conda activate dezus_py310
+conda create -n aic26_env python=3.10
+conda activate aic26_env
 
 # Install dependencies
 pip install -r requirements.txt
@@ -90,15 +107,16 @@ python app.py
 ```
 *The backend API will run on http://localhost:5000 (or as configured).*
 
-### 3. Frontend Setup
+### 4. Frontend Setup
+Open a new terminal window:
 ```bash
 cd AIC26/frontend
 
-# Install dependencies
-npm install
+# Install dependencies using Yarn
+yarn install
 
 # Run Vite development server
-npm run dev
+yarn dev
 ```
 *The web app will be available at http://localhost:5173*
 
@@ -110,14 +128,33 @@ If you want to extract and ingest new video datasets:
    - Extract shots: `python -m src.services.processing.pipeline shot_extraction ...`
    - Extract keyframes: `python -m src.services.processing.pipeline keyframe_extraction ...`
    - Generate embeddings: `sh src/scripts/embedding_extraction.sh`
-2. **Ingestion (Local)**:
+   
+2. **Frontend UI Update (Inject Frames)**:
+   - Place extracted JSON files in `frontend/public/media-info/`
+   - Place extracted images in `backend/processed/images/`
+   - Run the injection script so the web UI can show neighbor frames:
+   ```bash
+   # Make sure you are in the AIC26 root directory
+   python3 backend/src/scripts/inject_frames.py
+   ```
+
+3. **Ingestion to Database (Local)**:
    - Place your extracted data into `backend/processed/`
-   - Run the DB ingestion script:
+   - Run the DB ingestion script. 
+   
+   **For Mac/Linux:**
    ```bash
    cd backend
    sh src/scripts/db_ingestion.sh
    ```
-   *(Note: Ensure Docker DBs are running. If you want to start completely fresh without duplicating vectors in Milvus, run `docker-compose down` and delete the `volumes/` directory first).*
+   **For Windows:**
+   Since Windows CMD does not natively support `.sh` files, you must use **Git Bash** or **WSL**:
+   ```bash
+   cd backend
+   bash src/scripts/db_ingestion.sh
+   ```
+
+*(Note: Ensure Docker DBs are running. If you want to start completely fresh without duplicating vectors in Milvus, run `docker-compose down` and delete the `volumes/` directory first).*
 
 ---
-**Maintained by**: [Your Name/Team] 
+**Maintained by**: [AIC26 Team] 
