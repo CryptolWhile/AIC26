@@ -460,12 +460,28 @@ class RetrievalService:
             if len(non_empty) == 1:
                 final_res = non_empty[0]
             else:
-                # Nếu có nhiều hơn 1 model, chúng ta GỘP chúng bằng rrf_multiple
-                # rrf_multiple nhận n tham số là n danh sách kết quả
-                final_res = self.reranking.rrf_multiple(*non_empty)
+                # Nếu có nhiều hơn 1 model, kiểm tra xem đây là kết quả temporal hay bình thường
+                is_temporal = non_empty and len(non_empty[0]) > 0 and isinstance(non_empty[0][0], list)
+                if is_temporal:
+                    # Gộp kết quả temporal (nối mảng) vì RRF không hỗ trợ list of lists
+                    merged = []
+                    for model_res in non_empty:
+                        merged.extend(model_res)
+                    final_res = merged
+                else:
+                    # Gộp chúng bằng rrf_multiple cho kết quả bình thường
+                    final_res = self.reranking.rrf_multiple(*non_empty)
                 
             # Đảm bảo kết quả cuối cùng được sắp xếp
-            final_res = sorted(final_res, key=lambda x: x.get('score', 0) or 0, reverse=True)
+            is_temporal = final_res and isinstance(final_res[0], list)
+            if is_temporal:
+                # Tính tổng điểm của một sequence temporal
+                def get_temporal_score(seq):
+                    return sum(event.get('score', 0) for event in seq) if isinstance(seq, list) else 0
+                final_res = sorted(final_res, key=get_temporal_score, reverse=True)
+            else:
+                final_res = sorted(final_res, key=lambda x: x.get('score', 0) if isinstance(x, dict) else 0, reverse=True)
+            
             return [final_res[:limit]]
             
         except Exception as e:

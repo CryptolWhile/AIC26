@@ -26,7 +26,11 @@ class HuggingFaceCLIPEmbedding(EmbeddingModel):
 
         try:
             logger.info(f"Loading HuggingFace CLIP model: {self.model_name}")
-            self.model = CLIPModel.from_pretrained(self.model_name).to(self.device)
+            self.model = CLIPModel.from_pretrained(
+                self.model_name, 
+                low_cpu_mem_usage=False,
+                ignore_mismatched_sizes=True
+            ).to(self.device)
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
             self.processor = AutoProcessor.from_pretrained(self.model_name)
 
